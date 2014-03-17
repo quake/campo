@@ -18,6 +18,15 @@ class TopicTest < ActiveSupport::TestCase
     assert_equal 0, category.reload.topics_count
   end
 
+  test "should update counter after category change" do
+    c1, c2 = create(:category), create(:category)
+    topic = create(:topic, category: c1)
+    topic.category = c2
+    topic.save
+    assert_equal 0, c1.reload.topics_count
+    assert_equal 1, c2.reload.topics_count
+  end
+
   test "should update hot after comment change" do
     topic = create(:topic, comments_count: 1)
     hot = topic.hot

@@ -18,6 +18,8 @@ class Topic < ActiveRecord::Base
   after_trash :decrement_counter_cache, :delete_all_likes
   after_restore :increment_counter_cache
 
+  after_update :change_counter_cache, if: :category_id_changed?
+
   def increment_counter_cache
     if category
       Category.update_counters category.id, topics_count: 1
@@ -27,6 +29,16 @@ class Topic < ActiveRecord::Base
   def decrement_counter_cache
     if category
       Category.update_counters category.id, topics_count: -1
+    end
+  end
+
+  def change_counter_cache
+    if category_id
+      Category.update_counters category_id, topics_count: 1
+    end
+
+    if category_id_was
+      Category.update_counters category_id_was, topics_count: -1
     end
   end
 
